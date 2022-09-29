@@ -17,7 +17,7 @@ run :: Goal -> Substitution -> [Substitution]
 run = ($)
 
 equal :: Value -> Value -> Goal
-equal x y sub = maybeToList $ unify x y sub
+equal x y = maybeToList . unify x y
 
 succeed :: Goal
 succeed = return
@@ -26,7 +26,7 @@ fail :: Goal
 fail = const []
 
 conj :: Goal -> Goal -> Goal
-conj g1 g2 sub = concatMap g2 (g1 sub)
+conj g1 g2 = concatMap g2 . g1
 
 mixList :: [a] -> [a] -> [a]
 mixList [] ys = ys
