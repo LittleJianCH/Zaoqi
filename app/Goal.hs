@@ -19,9 +19,6 @@ run = ($)
 
 equal :: Value -> Value -> Goal
 equal x y = maybeToStream . unify x y
-  where maybeToStream :: Maybe a -> Stream a
-        maybeToStream Nothing = Nil
-        maybeToStream (Just x) = Cons x Nil
 
 succeed :: Goal
 succeed = return
