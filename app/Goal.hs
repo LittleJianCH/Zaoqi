@@ -8,30 +8,29 @@ module Goal (
 
 import Value
 import Substitution
+import Stream
 
 import Data.Maybe ( maybeToList )
 
-type Goal = Substitution -> [Substitution]
+type Goal = Substitution -> Stream Substitution
 
-run :: Goal -> Substitution -> [Substitution]
+run :: Goal -> Substitution -> Stream Substitution
 run = ($)
 
 equal :: Value -> Value -> Goal
-equal x y = maybeToList . unify x y
+equal x y = maybeToStream . unify x y
+  where maybeToStream :: Maybe a -> Stream a
+        maybeToStream Nothing = Nil
+        maybeToStream (Just x) = Cons x Nil
 
 succeed :: Goal
 succeed = return
 
 fail :: Goal
-fail = const []
+fail = const Nil
 
 conj :: Goal -> Goal -> Goal
-conj g1 g2 = concatMap g2 . g1
-
-mixList :: [a] -> [a] -> [a]
-mixList [] ys = ys
-mixList xs [] = xs
-mixList (x:xs) ys = x : mixList ys xs
+conj g1 g2 sub = g1 sub >>= g2
 
 disj :: Goal -> Goal -> Goal
-disj g1 g2 sub = mixList (g1 sub) (g2 sub)
+disj g1 g2 sub = append (g1 sub) (g2 sub)
