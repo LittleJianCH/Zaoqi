@@ -32,3 +32,10 @@ executable Zaoqi
     build-depends:    base ^>=4.14.3.0, containers ^>=0.6.5.1, zaoqi-core
     hs-source-dirs:   app
     default-language: Haskell2010
+
+test-suite test
+    type:             exitcode-stdio-1.0
+    main-is:          Main.hs
+    hs-source-dirs:   test
+    build-depends:    base, HUnit, zaoqi-core
+    default-language: Haskell2010
