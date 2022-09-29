@@ -42,4 +42,3 @@ unify x y sub =
        (_, Var yn) -> extend yn x' sub
        (List xs, List ys) -> zip xs ys |> foldM (flip $ uncurry unify) sub 
        _ -> Nothing
-
