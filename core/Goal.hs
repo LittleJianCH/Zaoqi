@@ -4,6 +4,8 @@ module Goal (
   equal,
   conj,
   disj,
+  succeed,
+  Goal.fail,
 ) where
 
 import Value
