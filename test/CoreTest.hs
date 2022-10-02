@@ -25,6 +25,15 @@ bindTest2 = TestCase $
       empty)
     [Map.fromList [("x", Atom "a"), ("y", Atom "b"), ("z", Atom "c")]]
 
+bindListLengthTest :: Test
+bindListLengthTest = TestCase $
+  assertEqual "Bind List Length Test"
+    (S.streamToList $ run 
+      (equal (List [Var "x",  Var "y", Var "z"])
+             (List [Atom "a", Atom "b"]))
+      empty)
+    []
+
 failTest1 :: Test
 failTest1 = TestCase $
   assertEqual "Fail Test 1" 
@@ -69,7 +78,7 @@ disjTest1 = TestCase $
 
 coreTest :: Test
 coreTest = TestList [
-  bindTest1, bindTest2, 
+  bindTest1, bindTest2, bindListLengthTest,
   failTest1, failTest2,
   conjTest1, conjTest2,
   disjTest1 ]
