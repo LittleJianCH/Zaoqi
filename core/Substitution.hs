@@ -37,8 +37,10 @@ unify x y sub =
   let x' = walk x sub
       y' = walk y sub
   in x' == y' ? Just sub $
-     case (x', y') of
-       (Var xn, _) -> extend xn y' sub
-       (_, Var yn) -> extend yn x' sub
-       (List xs, List ys) -> zip xs ys |> foldM (flip $ uncurry unify) sub 
-       _ -> Nothing
+    case (x', y') of
+      (Var xn, _) -> extend xn y' sub
+      (_, Var yn) -> extend yn x' sub
+      (List xs, List ys) -> 
+        length xs /= length ys ? Nothing $
+          zip xs ys |> foldM (flip $ uncurry unify) sub 
+      _ -> Nothing
