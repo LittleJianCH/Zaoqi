@@ -18,9 +18,17 @@ type Substitution = Map.Map String Value
 empty :: Substitution
 empty = Map.empty
 
-freshen :: String -> [String] -> String
-freshen str used =
-  head [s | s <- iterate (++ "'") str, s `notElem` used]
+variables :: [String]
+variables = map (:[]) alphas ++ [x:xs | x <- alphas, xs <- variables]
+  where alphas = ['a'..'z'] ++ ['A'..'Z']
+
+freshen :: Substitution -> String
+freshen sub =
+  let used = filter (('$' ==) . head) $
+               Map.keys sub ++ concatMap usedName (Map.elems sub)
+  in head [s | s <- map ('$':) variables, s `notElem` used]
+-- as every generated variable starts with $, freshen need only handle
+-- the conflict between generated variables in substitution.
 
 walk :: Value -> Substitution -> Value
 walk (Var x) sub = case Map.lookup x sub of
@@ -44,9 +52,7 @@ unify x y sub =
   let x' = walk x sub
       y' = walk y sub
   in x' == y' ? [sub] $
-    let used = usedName x' ++ usedName y' ++
-               Map.keys sub ++ concatMap usedName (Map.elems sub)
-    in case (x', y') of
+    case (x', y') of
       (Var xn, _) -> extend xn y' sub
       (_, Var yn) -> extend yn x' sub
       (List xs, List ys) ->
@@ -54,12 +60,14 @@ unify x y sub =
           zip xs ys |> foldM (flip $ uncurry unify) sub
       (Tie xn xe, Tie yn ye) ->
         sub |> unify (Var xn) (Var yn) >>= unify xe ye
-      (Tie _ _, _) -> unify x' (Tie "y" (App y' (Var "y"))) sub
+      (Tie _ _, _) ->
+        let freshY = freshen sub
+        in unify x' (Tie freshY (App y' (Var freshY))) sub
       (_, Tie _ _) -> unify y' x' sub
       (App xrator xrand, App yrator yrand) ->
         sub |> unify xrator yrator >>= unify xrand yrand
       (App _ _, _) ->
         unify x' (App valueId y') sub ++
-        unify x' (App (valueConst y') (Var $ freshen "t" used)) sub
+        unify x' (App (valueConst y') (Var $ freshen sub)) sub
       (_, App _ _) -> unify y' x' sub
       _ -> []
