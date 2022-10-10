@@ -20,7 +20,7 @@ run :: Goal -> Substitution -> Stream Substitution
 run = ($)
 
 equal :: Value -> Value -> Goal
-equal x y = maybeToStream . unify x y
+equal x y = listToStream . unify x y
 
 succeed :: Goal
 succeed = return

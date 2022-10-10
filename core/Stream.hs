@@ -4,6 +4,7 @@ module Stream (
   Stream(..),
   Stream.take,
   maybeToStream,
+  listToStream,
   streamToList,
   append,
 ) where
