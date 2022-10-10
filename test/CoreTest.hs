@@ -12,14 +12,14 @@ import qualified Data.Map as Map
 
 bindTest1 :: Test
 bindTest1 = TestCase $
-  assertEqual "Bind Test 1" 
+  assertEqual "Bind Test 1"
     (S.streamToList $ run (equal (Var "x") (Atom "a")) empty)
     [Map.fromList [("x", Atom "a")]]
 
 bindTest2 :: Test
 bindTest2 = TestCase $
   assertEqual "Bind Test 2"
-    (S.streamToList $ run 
+    (S.streamToList $ run
       (equal (List [Var "x",  Var "y", Var "z"])
              (List [Atom "a", Atom "b", Atom "c"]))
       empty)
@@ -28,7 +28,7 @@ bindTest2 = TestCase $
 bindListLengthTest :: Test
 bindListLengthTest = TestCase $
   assertEqual "Bind List Length Test"
-    (S.streamToList $ run 
+    (S.streamToList $ run
       (equal (List [Var "x",  Var "y", Var "z"])
              (List [Atom "a", Atom "b"]))
       empty)
@@ -36,14 +36,14 @@ bindListLengthTest = TestCase $
 
 failTest1 :: Test
 failTest1 = TestCase $
-  assertEqual "Fail Test 1" 
+  assertEqual "Fail Test 1"
     (S.streamToList $ run (equal (Atom "a") (Atom "b")) empty)
     []
 
 failTest2 :: Test
 failTest2 = TestCase $
-  assertEqual "Fail Test 1" 
-    (S.streamToList $ 
+  assertEqual "Fail Test 1"
+    (S.streamToList $
       run (equal (List [Var "a", Var "a"])
                  (List [Atom "x", Atom "y"])) empty)
     []
@@ -51,7 +51,7 @@ failTest2 = TestCase $
 conjTest1 :: Test
 conjTest1 = TestCase $
   assertEqual "Conj Test 1"
-    (S.streamToList $ 
+    (S.streamToList $
       run (conj (equal (Var "x") (Atom "a"))
                 (equal (Var "y") (Atom "b")))
       empty)
@@ -59,26 +59,42 @@ conjTest1 = TestCase $
 
 conjTest2 :: Test
 conjTest2 = TestCase $
-  assertEqual "Conj Test 2" 
-    (S.streamToList . (`run` empty) $ 
+  assertEqual "Conj Test 2"
+    (S.streamToList . (`run` empty) $
       foldl1 conj [
         equal (Var "x") (Atom "a")
       , equal (Var "y") (Atom "b")
       , equal (Var "x") (Var "y")])
     []
 
-disjTest1 :: Test 
+disjTest1 :: Test
 disjTest1 = TestCase $
   assertEqual "Disj Test 1"
-    (S.streamToList $ 
+    (S.streamToList $
       run (disj (equal (Var "x") (Atom "a"))
                 (equal (Var "x") (Atom "b")))
           empty)
     [Map.fromList [("x", Atom "a")], Map.fromList [("x", Atom "b")]]
+
+tieTest1 :: Test
+tieTest1 = TestCase $
+  assertEqual "Tie Test 1"
+    (S.streamToList $
+      run (equal (Tie "x" (Var "x")) (Atom "a")) empty)
+    []
+
+tieTest2 :: Test
+tieTest2 = TestCase $
+  assertEqual "Tie Test 1"
+    (S.streamToList $
+      run (equal (Tie "x" (Var "x"))
+                 (Tie "y" (Var "y"))) empty)
+    [Map.fromList [("x", Var "y")]] -- Does this make sense?
 
 coreTest :: Test
 coreTest = TestList [
   bindTest1, bindTest2, bindListLengthTest,
   failTest1, failTest2,
   conjTest1, conjTest2,
-  disjTest1 ]
+  disjTest1,
+  tieTest1, tieTest2 ]
