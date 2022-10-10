@@ -6,7 +6,7 @@ module Substitution (
   unify,
 ) where
 
-import Value ( Value(..), usedName, valueId, valueConst )
+import Value ( Value(..), usedName )
 import Utility ( (?), (|>) )
 import Stream
 
@@ -67,7 +67,13 @@ unify x y sub =
       (App xrator xrand, App yrator yrand) ->
         sub |> unify xrator yrator >>= unify xrand yrand
       (App _ _, _) ->
-        unify x' (App valueId y') sub ++
-        unify x' (App (valueConst y') (Var $ freshen sub)) sub
+        unify x' (App (valueId sub) y') sub ++
+        unify x' (App (valueConst y' sub) (Var $ freshen sub)) sub
       (_, App _ _) -> unify y' x' sub
       _ -> []
+  where
+    valueId :: Substitution -> Value
+    valueId sub = let t = freshen sub
+              in Tie t (Var t)
+    valueConst :: Value -> Substitution -> Value
+    valueConst v sub = Tie (freshen sub) v

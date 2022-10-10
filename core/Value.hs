@@ -1,8 +1,6 @@
 module Value (
   Value(..),
   usedName,
-  valueId,
-  valueConst,
 ) where
 
 import Data.List
@@ -23,9 +21,3 @@ usedName (List list) = unique $ concatMap usedName list
 usedName (Tie name body) = delete name $ usedName body
 usedName (App rator rand) = unique $ usedName rator ++ usedName rand
 usedName _ = []
-
-valueId :: Value
-valueId = Tie "x" (Var "x")
-
-valueConst :: Value -> Value
-valueConst a = Tie "x" (Var "a")
