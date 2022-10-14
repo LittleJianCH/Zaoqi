@@ -6,6 +6,8 @@ module Goal (
   disj,
   succeed,
   Goal.fail,
+  always,
+  never,
 ) where
 
 import Value
@@ -27,6 +29,12 @@ succeed = return
 
 fail :: Goal
 fail = const Nil
+
+always :: Goal
+always = disj succeed always
+
+never :: Goal
+never = never
 
 conj :: Goal -> Goal -> Goal
 conj g1 g2 sub = g1 sub >>= g2
