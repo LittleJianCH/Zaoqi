@@ -32,4 +32,4 @@ conj :: Goal -> Goal -> Goal
 conj g1 g2 sub = g1 sub >>= g2
 
 disj :: Goal -> Goal -> Goal
-disj g1 g2 sub = append (g1 sub) (g2 sub)
+disj g1 g2 sub = append (g1 sub) (Delay (g2 sub))
