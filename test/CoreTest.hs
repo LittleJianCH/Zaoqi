@@ -94,6 +94,12 @@ neverTest2 = TestCase $
     (S.streamToList $ run (conj never Goal.fail) empty)
     []
 
+neverTest3 :: Test
+neverTest3 = TestCase $
+  assertEqual "Never Test 3"
+    (take 1 $ S.streamToList $ run (disj never succeed) empty)
+    [Map.empty]
+
 coreTest :: Test
 coreTest = TestList [
   bindTest1, bindTest2, bindListLengthTest,
@@ -101,4 +107,4 @@ coreTest = TestList [
   conjTest1, conjTest2,
   disjTest1,
   alwaysTest1,
-  neverTest1 ] -- neverTest2 is non-ternimating
+  neverTest1, neverTest3 ] -- neverTest2 is non-ternimating

@@ -34,7 +34,7 @@ always :: Goal
 always = disj succeed always
 
 never :: Goal
-never = never
+never = Delay . never
 
 conj :: Goal -> Goal -> Goal
 conj g1 g2 sub = g1 sub >>= g2
